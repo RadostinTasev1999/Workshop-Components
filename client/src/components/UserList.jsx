@@ -7,6 +7,7 @@ import { useState } from "react"
 import { SearchList } from "./Search"
 import Pagination from "./Pagination"
 import UserListItem from "./UserListItem"
+import {CreateUser} from "./CreateUser"
 
 
 
@@ -14,22 +15,50 @@ import UserListItem from "./UserListItem"
 export const UserList = () => {
 
     const [users,setUsers] = useState([])
+    const [showCreate, setShowCreate] = useState(false);
 
     useEffect(() => {
         userService.getAll() 
-            .then(result => {
+            .then((result) => {
+                console.log('Users are:', result)
                 setUsers(result)
             })
             .catch()
     },[])
 
+    const addUserClickHandler = () => {
+            setShowCreate(true)
+    };
+
+    const saveCreateUserHandler = (e) => {
+        e.preventDefault()
+
+        
+        const formData = new FormData(e.target)
+        const formProperties = Object.fromEntries(formData)
+
+        console.log('Properties are:', formProperties)
+    }
+
+    const closeAddUser = () => {
+        
+        setShowCreate(false)
+    }
+
     return (
         <>
 
             <section className="card users-container">
-
+        
                 <SearchList/>
 
+            {showCreate  && (
+                <CreateUser
+                     onClose={closeAddUser}
+                     onSave={saveCreateUserHandler}
+                /> 
+           )}
+            
 
                 <div className="table-wrapper">
 
@@ -157,13 +186,13 @@ export const UserList = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {users.map(user => <UserListItem key={user._id} firstName={user.firstName} />)}
-                            <UserListItem />                           
+                            {users.map(user => <UserListItem key={user._id} {...user} />)}
+                            {/* <UserListItem />                            */}
                         </tbody>
                     </table>
                 </div>
 
-                <button className="btn-add btn">Add new user</button>
+                <button onClick={addUserClickHandler} className="btn-add btn">Add new user</button>
 
                 <Pagination/>
                 
