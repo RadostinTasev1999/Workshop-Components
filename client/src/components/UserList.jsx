@@ -30,14 +30,26 @@ export const UserList = () => {
             setShowCreate(true)
     };
 
-    const saveCreateUserHandler = (e) => {
+    const saveCreateUserHandler = async(e) => {
         e.preventDefault()
+        // console.log(e.target)
+        const formData = new FormData(e.target)
 
         
-        const formData = new FormData(e.target)
         const formProperties = Object.fromEntries(formData)
+        /* 
+        We convert the FormData object, which is a collection of key-value pairs,
+        into a plain JavaScript object.
+        */
 
-        console.log('Properties are:', formProperties)
+        // Create new user on server
+        const newUser = await userService.create(formProperties)
+
+        console.log(newUser)
+        // Update component state
+        setUsers(state => [...state,newUser])
+        // Close modal
+        setShowCreate(false);
     }
 
     const closeAddUser = () => {
